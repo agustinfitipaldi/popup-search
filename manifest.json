@@ -6,7 +6,11 @@
   "permissions": [
     "contextMenus",
     "tabs",
-    "windows"
+    "windows",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
   ],
   "background": {
     "service_worker": "background.js"
@@ -15,5 +19,13 @@
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
+  },
+  "commands": {
+    "search-kagi": {
+      "suggested_key": {
+        "default": "Alt+K"
+      },
+      "description": "Search selected text in Kagi"
+    }
   }
 } 
