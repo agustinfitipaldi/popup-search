@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kagi Split Search Settings</title>
+  <style>
+    body {
+      padding: 20px;
+      width: 300px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .setting-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    input[type="number"] {
+      width: 60px;
+    }
+    .hint {
+      color: #666;
+      font-size: 0.9em;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Settings</h2>
+  
+  <div class="setting-group">
+    <label for="maxWindows">Maximum Open Windows:</label>
+    <input type="number" id="maxWindows" min="1" max="10">
+    <div class="hint">Oldest window will close when limit is reached</div>
+  </div>
+
+  <div class="setting-group">
+    <label for="closeKey">Close Window Key:</label>
+    <select id="closeKey">
+      <option value="Escape">Escape</option>
+      <option value="q">Q</option>
+      <option value="w">W</option>
+    </select>
+    <div class="hint">Press this key to close the search window</div>
+  </div>
+
+  <button id="save">Save Settings</button>
+  <div id="status"></div>
+
+  <script src="options.js"></script>
+</body>
+</html> 

@@ -28,5 +28,9 @@
       },
       "description": "Search selected text in Kagi"
     }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
   }
 } 

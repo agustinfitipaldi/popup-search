@@ -9,8 +9,19 @@ chrome.runtime.onInstalled.addListener(() => {
 // Keep track of open search windows
 let searchWindows = [];
 
+// Get settings with defaults
+async function getSettings() {
+  return new Promise((resolve) => {
+    chrome.storage.sync.get({
+      maxWindows: 3,
+      closeKey: 'Escape'
+    }, resolve);
+  });
+}
+
 // Extract search functionality into a reusable function
-function performKagiSearch(searchText) {
+async function performKagiSearch(searchText) {
+  const settings = await getSettings();
   const searchQuery = encodeURIComponent(searchText);
   const kagiUrl = `https://kagi.com/search?q=${searchQuery}`;
   
@@ -24,8 +35,8 @@ function performKagiSearch(searchText) {
     }
   });
 
-  // Limit number of open windows (optional)
-  if (searchWindows.length >= 3) {
+  // Limit number of open windows based on settings
+  if (searchWindows.length >= settings.maxWindows) {
     chrome.windows.remove(searchWindows.shift());
   }
   
@@ -48,23 +59,18 @@ function performKagiSearch(searchText) {
       // Store the window ID
       searchWindows.push(window.id);
       
-      // Auto-close after 30 minutes (adjustable)
-      setTimeout(() => {
-        chrome.windows.remove(window.id);
-        searchWindows = searchWindows.filter(id => id !== window.id);
-      }, 30 * 60 * 1000);
-      
       // Add keyboard listener for this window
       chrome.tabs.query({ windowId: window.id }, (tabs) => {
         chrome.scripting.executeScript({
           target: { tabId: tabs[0].id },
-          function: () => {
+          function: (closeKey) => {
             document.addEventListener('keydown', (e) => {
-              if (e.key === 'Escape') {
+              if (e.key === closeKey) {
                 window.close();
               }
             });
-          }
+          },
+          args: [settings.closeKey]
         });
       });
     });
