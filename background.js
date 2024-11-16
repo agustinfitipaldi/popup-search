@@ -12,13 +12,12 @@ function performKagiSearch(searchText) {
   const kagiUrl = `https://kagi.com/search?q=${searchQuery}`;
   console.log('Attempting to open URL:', kagiUrl);
   
-  // Get the active window to position the popup
   chrome.windows.getCurrent({}, (parentWindow) => {
     const width = 800;
-    const height = 600;
+    const height = 1000;
     
-    const left = parentWindow.left + parentWindow.width - width;
-    const top = parentWindow.top;
+    const left = parentWindow.left + parentWindow.width - width - 20;
+    const top = parentWindow.top + 50;
 
     chrome.windows.create({
       url: kagiUrl,
