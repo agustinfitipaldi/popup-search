@@ -27,6 +27,24 @@
         "default": "Alt+K"
       },
       "description": "Search selected text in Kagi"
+    },
+    "search-oed": {
+      "suggested_key": {
+        "default": "Alt+O"
+      },
+      "description": "Search selected text in Oxford English Dictionary"
+    },
+    "search-websters": {
+      "suggested_key": {
+        "default": "Alt+W"
+      },
+      "description": "Search selected text in Webster's 1913"
+    },
+    "search-ucsb": {
+      "suggested_key": {
+        "default": "Alt+U"
+      },
+      "description": "Search selected text in UCSB Library"
     }
   },
   "options_ui": {

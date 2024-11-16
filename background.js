@@ -4,6 +4,24 @@ chrome.runtime.onInstalled.addListener(() => {
     title: "Search Kagi for '%s'",
     contexts: ["selection"]
   });
+  
+  chrome.contextMenus.create({
+    id: "searchOED",
+    title: "Search OED for '%s'",
+    contexts: ["selection"]
+  });
+  
+  chrome.contextMenus.create({
+    id: "searchWebsters",
+    title: "Search Webster's 1913 for '%s'",
+    contexts: ["selection"]
+  });
+  
+  chrome.contextMenus.create({
+    id: "searchUCSB",
+    title: "Search UCSB Library for '%s'",
+    contexts: ["selection"]
+  });
 });
 
 // Keep track of open search windows
@@ -19,11 +37,27 @@ async function getSettings() {
   });
 }
 
-// Extract search functionality into a reusable function
-async function performKagiSearch(searchText) {
+// Function to get search URL based on type
+function getSearchUrl(searchText, searchType) {
+  const query = encodeURIComponent(searchText);
+  switch (searchType) {
+    case 'kagi':
+      return `https://kagi.com/search?q=${query}`;
+    case 'oed':
+      return `https://www.oed.com/search/dictionary/?scope=Entries&q=${query}`;
+    case 'websters':
+      return `https://www.websters1913.com/words/${query}`;
+    case 'ucsb':
+      return `https://search.library.ucsb.edu/discovery/search?query=any,contains,${query}&tab=Everything&search_scope=DN_and_CI&vid=01UCSB_INST:UCSB&lang=en&offset=0`;
+    default:
+      return `https://kagi.com/search?q=${query}`;
+  }
+}
+
+// Modify the search function to accept search type
+async function performSearch(searchText, searchType) {
   const settings = await getSettings();
-  const searchQuery = encodeURIComponent(searchText);
-  const kagiUrl = `https://kagi.com/search?q=${searchQuery}`;
+  const searchUrl = getSearchUrl(searchText, searchType);
   
   // Clean up old windows that might have been closed manually
   searchWindows = searchWindows.filter(windowId => {
@@ -48,7 +82,7 @@ async function performKagiSearch(searchText) {
     const top = parentWindow.top + 50;
 
     chrome.windows.create({
-      url: kagiUrl,
+      url: searchUrl,
       type: 'popup',
       width: width,
       height: height,
@@ -77,27 +111,42 @@ async function performKagiSearch(searchText) {
   });
 }
 
-// Modify context menu listener to use the new function
+// Update context menu listener
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "searchKagi") {
-    performKagiSearch(info.selectionText);
+    performSearch(info.selectionText, 'kagi');
+  } else if (info.menuItemId === "searchOED") {
+    performSearch(info.selectionText, 'oed');
+  } else if (info.menuItemId === "searchWebsters") {
+    performSearch(info.selectionText, 'websters');
+  } else if (info.menuItemId === "searchUCSB") {
+    performSearch(info.selectionText, 'ucsb');
   }
 });
 
-// Add keyboard shortcut listener
+// Update keyboard shortcut listener
 chrome.commands.onCommand.addListener(async (command) => {
-  if (command === "search-kagi") {
-    // Get the active tab
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    
-    // Execute script to get selected text
-    const [{result}] = await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      function: () => window.getSelection().toString()
-    });
-    
-    if (result) {
-      performKagiSearch(result);
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  
+  const [{result}] = await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    function: () => window.getSelection().toString()
+  });
+  
+  if (result) {
+    switch (command) {
+      case 'search-kagi':
+        performSearch(result, 'kagi');
+        break;
+      case 'search-oed':
+        performSearch(result, 'oed');
+        break;
+      case 'search-websters':
+        performSearch(result, 'websters');
+        break;
+      case 'search-ucsb':
+        performSearch(result, 'ucsb');
+        break;
     }
   }
 }); 
