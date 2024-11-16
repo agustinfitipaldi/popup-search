@@ -1,26 +1,12 @@
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
-    id: "searchKagi",
-    title: "Search Kagi for '%s'",
-    contexts: ["selection"]
-  });
-  
-  chrome.contextMenus.create({
-    id: "searchOED",
-    title: "Search OED for '%s'",
-    contexts: ["selection"]
-  });
-  
-  chrome.contextMenus.create({
-    id: "searchWebsters",
-    title: "Search Webster's 1913 for '%s'",
-    contexts: ["selection"]
-  });
-  
-  chrome.contextMenus.create({
-    id: "searchUCSB",
-    title: "Search UCSB Library for '%s'",
-    contexts: ["selection"]
+  chrome.storage.sync.get({ searchOptions: [] }, (settings) => {
+    settings.searchOptions.forEach(option => {
+      chrome.contextMenus.create({
+        id: option.id,
+        title: `Search ${option.name} for '%s'`,
+        contexts: ["selection"]
+      });
+    });
   });
 });
 
@@ -39,25 +25,22 @@ async function getSettings() {
 
 // Function to get search URL based on type
 function getSearchUrl(searchText, searchType) {
-  const query = encodeURIComponent(searchText);
-  switch (searchType) {
-    case 'kagi':
-      return `https://kagi.com/search?q=${query}`;
-    case 'oed':
-      return `https://www.oed.com/search/dictionary/?scope=Entries&q=${query}`;
-    case 'websters':
-      return `https://www.websters1913.com/words/${query}`;
-    case 'ucsb':
-      return `https://search.library.ucsb.edu/discovery/search?query=any,contains,${query}&tab=Everything&search_scope=DN_and_CI&vid=01UCSB_INST:UCSB&lang=en&offset=0`;
-    default:
-      return `https://kagi.com/search?q=${query}`;
-  }
+  return new Promise((resolve) => {
+    chrome.storage.sync.get({ searchOptions: [] }, (settings) => {
+      const option = settings.searchOptions.find(opt => opt.id === searchType);
+      if (option) {
+        resolve(option.url.replace('{query}', encodeURIComponent(searchText)));
+      } else {
+        resolve(`https://kagi.com/search?q=${encodeURIComponent(searchText)}`);
+      }
+    });
+  });
 }
 
 // Modify the search function to accept search type
 async function performSearch(searchText, searchType) {
   const settings = await getSettings();
-  const searchUrl = getSearchUrl(searchText, searchType);
+  const searchUrl = await getSearchUrl(searchText, searchType);
   
   // Clean up old windows that might have been closed manually
   searchWindows = searchWindows.filter(windowId => {
@@ -113,40 +96,27 @@ async function performSearch(searchText, searchType) {
 
 // Update context menu listener
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === "searchKagi") {
-    performSearch(info.selectionText, 'kagi');
-  } else if (info.menuItemId === "searchOED") {
-    performSearch(info.selectionText, 'oed');
-  } else if (info.menuItemId === "searchWebsters") {
-    performSearch(info.selectionText, 'websters');
-  } else if (info.menuItemId === "searchUCSB") {
-    performSearch(info.selectionText, 'ucsb');
-  }
+  performSearch(info.selectionText, info.menuItemId);
 });
 
-// Update keyboard shortcut listener
+// Update keyboard command listener
 chrome.commands.onCommand.addListener(async (command) => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  
-  const [{result}] = await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    function: () => window.getSelection().toString()
-  });
-  
-  if (result) {
-    switch (command) {
-      case 'search-kagi':
-        performSearch(result, 'kagi');
-        break;
-      case 'search-oed':
-        performSearch(result, 'oed');
-        break;
-      case 'search-websters':
-        performSearch(result, 'websters');
-        break;
-      case 'search-ucsb':
-        performSearch(result, 'ucsb');
-        break;
+    // Extract the shortcut letter from the command (e.g., "search-K" -> "K")
+    const shortcut = command.split('-')[1];
+    
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    
+    const [{result}] = await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        function: () => window.getSelection().toString()
+    });
+    
+    if (result) {
+        chrome.storage.sync.get({ searchOptions: [] }, (settings) => {
+            const option = settings.searchOptions.find(opt => opt.shortcut === shortcut);
+            if (option) {
+                performSearch(result, option.id);
+            }
+        });
     }
-  }
 }); 

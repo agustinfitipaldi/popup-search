@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kagi Split Search Settings</title>
+  <title>Search Settings</title>
   <style>
     body {
       padding: 20px;
@@ -26,6 +26,45 @@
       font-size: 0.9em;
       margin-top: 4px;
     }
+    .search-options {
+      margin: 20px 0;
+    }
+    .search-option {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    .search-option input {
+      margin: 5px 0;
+      width: 100%;
+    }
+    .shortcut-input {
+      width: 50px !important;
+      text-transform: uppercase;
+    }
+    .delete-btn {
+      background: #ff4444;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      float: right;
+    }
+    .add-search-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 3px;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+    .hint {
+      font-style: italic;
+      color: #666;
+      font-size: 0.8em;
+    }
   </style>
 </head>
 <body>
@@ -47,6 +86,13 @@
     <div class="hint">Press this key to close the search window</div>
   </div>
 
+  <h3>Search Options</h3>
+  <div class="hint">Use {query} in the URL where you want the selected text to appear</div>
+  <div id="searchOptions" class="search-options">
+    <!-- Search options will be inserted here -->
+  </div>
+
+  <button id="addSearch" class="add-search-btn">Add New Search Option</button>
   <button id="save">Save Settings</button>
   <div id="status"></div>
 

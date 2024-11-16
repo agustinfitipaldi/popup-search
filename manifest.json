@@ -22,29 +22,29 @@
     "128": "icons/icon128.png"
   },
   "commands": {
-    "search-kagi": {
+    "search-K": {
       "suggested_key": {
         "default": "Alt+K"
       },
-      "description": "Search selected text in Kagi"
+      "description": "Search with shortcut K"
     },
-    "search-oed": {
+    "search-O": {
       "suggested_key": {
         "default": "Alt+O"
       },
-      "description": "Search selected text in Oxford English Dictionary"
+      "description": "Search with shortcut O"
     },
-    "search-websters": {
+    "search-W": {
       "suggested_key": {
         "default": "Alt+W"
       },
-      "description": "Search selected text in Webster's 1913"
+      "description": "Search with shortcut W"
     },
-    "search-ucsb": {
+    "search-U": {
       "suggested_key": {
         "default": "Alt+U"
       },
-      "description": "Search selected text in UCSB Library"
+      "description": "Search with shortcut U"
     }
   },
   "options_ui": {
