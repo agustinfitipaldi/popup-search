@@ -6,10 +6,28 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+// Keep track of open search windows
+let searchWindows = [];
+
 // Extract search functionality into a reusable function
 function performKagiSearch(searchText) {
   const searchQuery = encodeURIComponent(searchText);
   const kagiUrl = `https://kagi.com/search?q=${searchQuery}`;
+  
+  // Clean up old windows that might have been closed manually
+  searchWindows = searchWindows.filter(windowId => {
+    try {
+      chrome.windows.get(windowId);
+      return true;
+    } catch {
+      return false;
+    }
+  });
+
+  // Limit number of open windows (optional)
+  if (searchWindows.length >= 3) {
+    chrome.windows.remove(searchWindows.shift());
+  }
   
   chrome.windows.getCurrent({}, (parentWindow) => {
     const width = 800;
@@ -26,6 +44,29 @@ function performKagiSearch(searchText) {
       left: left,
       top: top,
       focused: true
+    }, (window) => {
+      // Store the window ID
+      searchWindows.push(window.id);
+      
+      // Auto-close after 30 minutes (adjustable)
+      setTimeout(() => {
+        chrome.windows.remove(window.id);
+        searchWindows = searchWindows.filter(id => id !== window.id);
+      }, 30 * 60 * 1000);
+      
+      // Add keyboard listener for this window
+      chrome.tabs.query({ windowId: window.id }, (tabs) => {
+        chrome.scripting.executeScript({
+          target: { tabId: tabs[0].id },
+          function: () => {
+            document.addEventListener('keydown', (e) => {
+              if (e.key === 'Escape') {
+                window.close();
+              }
+            });
+          }
+        });
+      });
     });
   });
 }
