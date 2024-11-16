@@ -5,7 +5,8 @@
   "description": "Search selected text in Kagi using Edge split view",
   "permissions": [
     "contextMenus",
-    "tabs"
+    "tabs",
+    "windows"
   ],
   "background": {
     "service_worker": "background.js"
