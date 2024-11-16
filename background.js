@@ -10,7 +10,6 @@ chrome.runtime.onInstalled.addListener(() => {
 function performKagiSearch(searchText) {
   const searchQuery = encodeURIComponent(searchText);
   const kagiUrl = `https://kagi.com/search?q=${searchQuery}`;
-  console.log('Attempting to open URL:', kagiUrl);
   
   chrome.windows.getCurrent({}, (parentWindow) => {
     const width = 800;
