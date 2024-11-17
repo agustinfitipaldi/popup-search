@@ -15,6 +15,18 @@ const DEFAULT_SETTINGS = {
       name: 'Oxford English Dictionary',
       url: 'https://www.oed.com/search/dictionary/?scope=Entries&q={query}',
       shortcut: 'O'
+    },
+    {
+      id: 'websters1913',
+      name: "Webster's 1913",
+      url: 'https://www.websters1913.com/words/{query}',
+      shortcut: 'W'
+    },
+    {
+      id: 'ucsb',
+      name: 'UCSB Library',
+      url: 'https://search.library.ucsb.edu/discovery/search?query=any,contains,{query}&tab=Everything&search_scope=DN_and_CI&vid=01UCSB_INST:UCSB&lang=en&offset=0',
+      shortcut: 'U'
     }
     // ... other default search options ...
   ]
