@@ -157,4 +157,56 @@ document.getElementById('save').addEventListener('click', () => {
         status.textContent = '';
     }, 2000);
   });
+});
+
+// Export settings
+document.getElementById('export').addEventListener('click', () => {
+    chrome.storage.sync.get(null, (settings) => {
+        const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'kagi-split-search-settings.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+});
+
+// Import settings
+document.getElementById('import').addEventListener('click', () => {
+    document.getElementById('importInput').click();
+});
+
+document.getElementById('importInput').addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const settings = JSON.parse(e.target.result);
+                
+                // Validate the imported settings
+                if (!settings.searchOptions || !Array.isArray(settings.searchOptions)) {
+                    throw new Error('Invalid settings format');
+                }
+
+                // Save the imported settings
+                chrome.storage.sync.set(settings, () => {
+                    // Reload the page to show the imported settings
+                    window.location.reload();
+                });
+            } catch (error) {
+                const status = document.getElementById('status');
+                status.textContent = 'Error importing settings: Invalid file format';
+                status.className = 'error';
+                setTimeout(() => {
+                    status.className = '';
+                    status.textContent = '';
+                }, 3000);
+            }
+        };
+        reader.readAsText(file);
+    }
 }); 

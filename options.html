@@ -171,6 +171,23 @@
         .shortcut-input {
             width: 80px !important;
         }
+
+        .secondary-btn {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+            margin-left: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        .secondary-btn:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -209,6 +226,9 @@
         </div>
 
         <button id="save">Save Settings</button>
+        <button id="export" class="secondary-btn">Export Settings</button>
+        <button id="import" class="secondary-btn">Import Settings</button>
+        <input type="file" id="importInput" accept=".json" style="display: none;">
         <div id="status"></div>
     </div>
 
