@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const optionsContainer = document.getElementById('options');
 
-    // Fetch search options from storage
-    chrome.storage.sync.get({ searchOptions: [] }, (settings) => {
+    // Fetch search options and dimensions from storage
+    chrome.storage.sync.get({ searchOptions: [], selectorDimensions: { width: 300, height: 160 } }, (settings) => {
         settings.searchOptions.forEach(option => {
             const optionDiv = document.createElement('div');
             optionDiv.className = 'search-option';
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (option.quickKey) {
                 const shortcutSpan = document.createElement('span');
                 shortcutSpan.className = 'shortcut';
-                shortcutSpan.textContent = `(${option.quickKey})`;
+                shortcutSpan.textContent = `${option.quickKey}`;
                 optionDiv.appendChild(shortcutSpan);
             }
 
@@ -24,6 +24,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             optionsContainer.appendChild(optionDiv);
         });
+        
+        // Set the window size using stored dimensions
+        const { width, height } = settings.selectorDimensions;
+        window.resizeTo(width, height);
+        
+        // Update the grid columns based on number of options
+        if (settings.searchOptions.length > 10) {
+            optionsContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        }
     });
 
     // Listen for key presses
@@ -56,4 +65,4 @@ function performSearch(searchType) {
             console.error('Missing selectedText or searchType');
         }
     });
-} 
+}

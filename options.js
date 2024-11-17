@@ -120,10 +120,23 @@ document.getElementById('save').addEventListener('click', () => {
     quickKey: el.querySelector('.quick-key-input').value.toUpperCase()
   }));
 
+  // Calculate selector dimensions based on number of options
+  const numOptions = searchOptions.length;
+  const columns = numOptions > 10 ? 2 : 1;
+  const baseHeight = 100; // Base height for header and padding
+  const optionHeight = 75; // Height per option
+  const rowsPerColumn = Math.ceil(numOptions / columns);
+  
+  const selectorDimensions = {
+    width: columns === 1 ? 400 : 700,
+    height: baseHeight + (rowsPerColumn * optionHeight)
+  };
+
   const settings = {
     maxWindows: parseInt(document.getElementById('maxWindows').value, 10),
     closeKey: document.getElementById('closeKey').value,
-    searchOptions: searchOptions
+    searchOptions: searchOptions,
+    selectorDimensions: selectorDimensions
   };
 
   // Validate settings
