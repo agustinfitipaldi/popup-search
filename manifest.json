@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Kagi Split Search",
+  "name": "Popup Search",
   "version": "1.0",
-  "description": "Search selected text in Kagi using Edge split view",
+  "description": "Search selected text in a popup using a search engine of your choice",
   "permissions": [
     "contextMenus",
     "tabs",
