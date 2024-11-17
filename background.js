@@ -43,14 +43,16 @@ async function performSearch(searchText, searchType) {
   const searchUrl = await getSearchUrl(searchText, searchType);
   
   // Clean up old windows that might have been closed manually
-  searchWindows = searchWindows.filter(windowId => {
-    try {
-      chrome.windows.get(windowId);
-      return true;
-    } catch {
-      return false;
-    }
-  });
+  searchWindows = (await Promise.all(
+    searchWindows.map(async (windowId) => {
+      try {
+        await chrome.windows.get(windowId);
+        return windowId;
+      } catch {
+        return null;
+      }
+    })
+  )).filter(Boolean);
 
   // Limit number of open windows based on settings
   if (searchWindows.length >= settings.maxWindows) {
