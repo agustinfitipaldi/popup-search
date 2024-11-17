@@ -92,7 +92,7 @@ document.getElementById('addSearch').addEventListener('click', () => {
 });
 
 // Save settings
-document.getElementById('save').addEventListener('click', () => {
+document.getElementById('save').addEventListener('click', async () => {
   const searchOptions = Array.from(document.querySelectorAll('.search-option')).map(el => ({
     id: el.dataset.id || generateUniqueId(),
     name: el.querySelector('.name-input').value,
@@ -126,13 +126,70 @@ document.getElementById('save').addEventListener('click', () => {
     return;
   }
 
+  // Get all unique shortcuts
+  const allShortcuts = Array.from(shortcuts);
+  
+  // Update manifest
+  const manifestUpdated = await updateManifest(allShortcuts);
+  
+  if (!manifestUpdated) {
+    const status = document.getElementById('status');
+    status.textContent = 'Error updating manifest. Please check console.';
+    status.className = 'error';
+    return;
+  }
+
   chrome.storage.sync.set(settings, () => {
     const status = document.getElementById('status');
-    status.textContent = 'Settings saved!';
+    status.innerHTML = `
+        Settings saved! <br>
+        Please save the downloaded manifest.json file to your extension directory 
+        and reload the extension from chrome://extensions
+    `;
     status.className = 'success';
     setTimeout(() => {
         status.className = '';
         status.textContent = '';
     }, 2000);
   });
-}); 
+});
+
+async function updateManifest(shortcuts) {
+    try {
+        // Get the current manifest
+        const response = await fetch(chrome.runtime.getURL('manifest.json'));
+        const manifest = await response.json();
+        
+        // Update commands section
+        manifest.commands = {};
+        shortcuts.forEach(shortcut => {
+            manifest.commands[`search-${shortcut}`] = {
+                suggested_key: {
+                    default: `Alt+${shortcut}`
+                },
+                description: `Search with shortcut ${shortcut}`
+            };
+        });
+
+        // Convert manifest to blob
+        const manifestBlob = new Blob(
+            [JSON.stringify(manifest, null, 2)], 
+            { type: 'application/json' }
+        );
+
+        // Create download link and trigger download
+        const downloadUrl = URL.createObjectURL(manifestBlob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = 'manifest.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(downloadUrl);
+
+        return true;
+    } catch (error) {
+        console.error('Error updating manifest:', error);
+        return false;
+    }
+} 

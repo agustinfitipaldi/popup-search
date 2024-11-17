@@ -208,6 +208,23 @@
             <button id="addSearch" class="add-search-btn">Add New Search Option</button>
         </div>
 
+        <div class="card">
+            <h2>Available Shortcuts</h2>
+            <div class="hint">
+                Add or remove shortcuts here. After saving, you'll need to:
+                1. Save the downloaded manifest.json to your extension directory
+                2. Go to chrome://extensions
+                3. Click the reload button for this extension
+            </div>
+            <div class="setting-group">
+                <input type="text" id="newShortcut" maxlength="1" placeholder="Add new shortcut key">
+                <button id="addShortcut" class="add-search-btn">Add Shortcut</button>
+            </div>
+            <div id="shortcutList">
+                <!-- Shortcuts will be listed here -->
+            </div>
+        </div>
+
         <button id="save">Save Settings</button>
         <div id="status"></div>
     </div>
