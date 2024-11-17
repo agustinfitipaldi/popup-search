@@ -2,43 +2,45 @@
 const DEFAULT_SETTINGS = {
   maxWindows: 3,
   closeKey: 'Escape',
-  availableShortcuts: ['K', 'O', 'W', 'U'], // These must match manifest.json
   searchOptions: [
     {
       id: 'kagi',
       name: 'Kagi',
       url: 'https://kagi.com/search?q={query}',
-      shortcut: 'K'
+      shortcut: '1',
+      quickKey: 'K'
     },
     {
       id: 'oed',
       name: 'Oxford English Dictionary',
       url: 'https://www.oed.com/search/dictionary/?scope=Entries&q={query}',
-      shortcut: 'O'
+      shortcut: '2',
+      quickKey: 'O'
     },
     {
       id: 'websters1913',
       name: "Webster's 1913",
       url: 'https://www.websters1913.com/words/{query}',
-      shortcut: 'W'
+      shortcut: '3',
+      quickKey: 'W'
     },
     {
       id: 'ucsb',
       name: 'UCSB Library',
       url: 'https://search.library.ucsb.edu/discovery/search?query=any,contains,{query}&tab=Everything&search_scope=DN_and_CI&vid=01UCSB_INST:UCSB&lang=en&offset=0',
-      shortcut: 'U'
+      shortcut: '',
+      quickKey: 'U'
     }
-    // ... other default search options ...
   ]
 };
 
-function createSearchOptionElement(option, availableShortcuts, usedShortcuts) {
+function createSearchOptionElement(option, usedShortcuts) {
     const div = document.createElement('div');
     div.className = 'search-option';
     div.dataset.id = option.id || generateUniqueId();
     
-    // Create shortcut select options
-    const shortcutOptions = availableShortcuts
+    // Create shortcut select options - now only 3 options
+    const shortcutOptions = ['1', '2', '3']
         .map(s => `<option value="${s}" ${option.shortcut === s ? 'selected' : ''} ${usedShortcuts.has(s) && option.shortcut !== s ? 'disabled' : ''}>${s}</option>`)
         .join('');
 
@@ -50,12 +52,18 @@ function createSearchOptionElement(option, availableShortcuts, usedShortcuts) {
         <label>URL:
             <input type="text" class="url-input" value="${option.url || ''}" placeholder="https://example.com/search?q={query}">
         </label>
-        <label>Keyboard Shortcut (optional):
-            <span>Alt+</span>
+        <label>Primary Shortcut (Alt+1/2/3):
             <select class="shortcut-input">
                 <option value="">None</option>
                 ${shortcutOptions}
             </select>
+        </label>
+        <label>Quick Select Key:
+            <input type="text" class="quick-key-input" 
+                   maxlength="1" 
+                   value="${option.quickKey || ''}" 
+                   placeholder="Single letter">
+            <div class="hint">Letter to press when selector popup is open (Alt+S)</div>
         </label>
     `;
 
@@ -78,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     settings.searchOptions.forEach(option => {
       searchOptionsContainer.appendChild(
-        createSearchOptionElement(option, settings.availableShortcuts, usedShortcuts)
+        createSearchOptionElement(option, usedShortcuts)
       );
     });
   });
@@ -96,7 +104,6 @@ document.getElementById('addSearch').addEventListener('click', () => {
     searchOptionsContainer.appendChild(
       createSearchOptionElement(
         { id: generateUniqueId() },
-        settings.availableShortcuts,
         usedShortcuts
       )
     );
@@ -109,7 +116,8 @@ document.getElementById('save').addEventListener('click', () => {
     id: el.dataset.id || generateUniqueId(),
     name: el.querySelector('.name-input').value,
     url: el.querySelector('.url-input').value,
-    shortcut: el.querySelector('.shortcut-input').value.toUpperCase()
+    shortcut: el.querySelector('.shortcut-input').value,
+    quickKey: el.querySelector('.quick-key-input').value.toUpperCase()
   }));
 
   const settings = {
@@ -118,16 +126,20 @@ document.getElementById('save').addEventListener('click', () => {
     searchOptions: searchOptions
   };
 
-  // Validate settings before saving
+  // Validate settings
   const errors = [];
   const shortcuts = new Set();
+  const quickKeys = new Set();
   
   settings.searchOptions.forEach(option => {
     if (!option.name) errors.push('Name is required for all search options');
     if (!option.url) errors.push('URL is required for all search options');
     if (!option.url.includes('{query}')) errors.push(`URL for ${option.name} must include {query}`);
-    if (option.shortcut && shortcuts.has(option.shortcut)) errors.push(`Duplicate shortcut: Alt+${option.shortcut}`);
+    if (option.shortcut && shortcuts.has(option.shortcut)) errors.push(`Duplicate primary shortcut: Alt+${option.shortcut}`);
     if (option.shortcut) shortcuts.add(option.shortcut);
+    if (!option.quickKey) errors.push(`Quick select key is required for ${option.name}`);
+    if (option.quickKey && quickKeys.has(option.quickKey)) errors.push(`Duplicate quick select key: ${option.quickKey}`);
+    if (option.quickKey) quickKeys.add(option.quickKey);
   });
 
   if (errors.length > 0) {

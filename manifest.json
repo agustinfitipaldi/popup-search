@@ -22,29 +22,29 @@
     "128": "icons/icon128.png"
   },
   "commands": {
-    "search-K": {
+    "search-1": {
       "suggested_key": {
-        "default": "Alt+K"
+        "default": "Alt+1"
       },
-      "description": "Search with shortcut K"
+      "description": "Search with shortcut 1"
     },
-    "search-O": {
+    "search-2": {
       "suggested_key": {
-        "default": "Alt+O"
+        "default": "Alt+2"
       },
-      "description": "Search with shortcut O"
+      "description": "Search with shortcut 2"
     },
-    "search-W": {
+    "search-3": {
       "suggested_key": {
-        "default": "Alt+W"
+        "default": "Alt+3"
       },
-      "description": "Search with shortcut W"
+      "description": "Search with shortcut 3"
     },
-    "search-U": {
+    "show-selector": {
       "suggested_key": {
-        "default": "Alt+U"
+        "default": "Alt+S"
       },
-      "description": "Search with shortcut U"
+      "description": "Show search engine selector"
     }
   },
   "options_ui": {

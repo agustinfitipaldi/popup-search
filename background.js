@@ -10,6 +10,12 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+// Add this near the top of background.js with the other listeners
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'performSearch') {
+      performSearch(request.searchText, request.searchType);
+  }
+}); 
 // Keep track of open search windows
 let searchWindows = [];
 
@@ -101,11 +107,40 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   performSearch(info.selectionText, info.menuItemId);
 });
 
-// Update keyboard command listener
+// New function to show search engine selector popup
+async function showSearchSelector(selectedText) {
+  const [currentTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  
+  // Get current window to calculate center position
+  const windows = await chrome.windows.getAll();
+  const currentWindow = windows[0]; // Use first window as reference
+  
+  // Calculate centered position
+  const width = 400;
+  const height = 500;
+  const left = Math.round((currentWindow.width - width) / 2);
+  const top = Math.round((currentWindow.height - height) / 2);
+
+  chrome.windows.create({
+    url: 'selector.html',
+    type: 'popup',
+    width: width,
+    height: height,
+    left: left + currentWindow.left, // Add window offset
+    top: top + currentWindow.top,    // Add window offset
+    focused: true
+  }, (window) => {
+    chrome.storage.session.set({
+      selectorData: {
+        selectedText,
+        parentTabId: currentTab.id
+      }
+    });
+  });
+}
+
+// Update commands listener
 chrome.commands.onCommand.addListener(async (command) => {
-    // Extract the shortcut letter from the command (e.g., "search-K" -> "K")
-    const shortcut = command.split('-')[1];
-    
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     
     const [{result}] = await chrome.scripting.executeScript({
@@ -114,11 +149,17 @@ chrome.commands.onCommand.addListener(async (command) => {
     });
     
     if (result) {
-        chrome.storage.sync.get({ searchOptions: [] }, (settings) => {
-            const option = settings.searchOptions.find(opt => opt.shortcut === shortcut);
-            if (option) {
-                performSearch(result, option.id);
-            }
-        });
+        if (command === 'show-selector') {
+            showSearchSelector(result);
+        } else {
+            // Handle existing shortcut searches
+            const shortcut = command.split('-')[1];
+            chrome.storage.sync.get({ searchOptions: [] }, (settings) => {
+                const option = settings.searchOptions.find(opt => opt.shortcut === shortcut);
+                if (option) {
+                    performSearch(result, option.id);
+                }
+            });
+        }
     }
-}); 
+});
