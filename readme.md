@@ -1,4 +1,4 @@
-# Kagi Split Search
+# Popup Search
 
 A browser extension, made with Claude Sonnet 3.5 in Cursor, that enables quick popup
 searching using Kagi and other search engines. Select text on any webpage and search
@@ -23,7 +23,7 @@ it in a convenient popup window.
 ### Context Menu Search
 
 1. Select any text on a webpage
-2. Right-click and select the search option from the Kagi Split Search context menu
+2. Right-click and select the search option from the Popup Search context menu
 
 ### Keyboard Shortcuts
 
@@ -45,7 +45,7 @@ it in a convenient popup window.
 Access the extension settings by:
 
 1. Going to your browser's extensions page
-2. Finding "Kagi Split Search"
+2. Finding "Popup Search"
 3. Clicking "Options"
 
 ### Customizable Settings
