@@ -50,10 +50,10 @@ function createSearchOptionElement(option, availableShortcuts, usedShortcuts) {
         <label>URL:
             <input type="text" class="url-input" value="${option.url || ''}" placeholder="https://example.com/search?q={query}">
         </label>
-        <label>Keyboard Shortcut:
+        <label>Keyboard Shortcut (optional):
             <span>Alt+</span>
             <select class="shortcut-input">
-                <option value="">Select...</option>
+                <option value="">None</option>
                 ${shortcutOptions}
             </select>
         </label>
@@ -126,9 +126,8 @@ document.getElementById('save').addEventListener('click', () => {
     if (!option.name) errors.push('Name is required for all search options');
     if (!option.url) errors.push('URL is required for all search options');
     if (!option.url.includes('{query}')) errors.push(`URL for ${option.name} must include {query}`);
-    if (!option.shortcut) errors.push('Shortcut is required for all search options');
-    if (shortcuts.has(option.shortcut)) errors.push(`Duplicate shortcut: Alt+${option.shortcut}`);
-    shortcuts.add(option.shortcut);
+    if (option.shortcut && shortcuts.has(option.shortcut)) errors.push(`Duplicate shortcut: Alt+${option.shortcut}`);
+    if (option.shortcut) shortcuts.add(option.shortcut);
   });
 
   if (errors.length > 0) {
@@ -139,6 +138,17 @@ document.getElementById('save').addEventListener('click', () => {
   }
 
   chrome.storage.sync.set(settings, () => {
+    // Recreate context menus
+    chrome.contextMenus.removeAll(() => {
+      settings.searchOptions.forEach(option => {
+        chrome.contextMenus.create({
+          id: option.id,
+          title: `Search ${option.name} for '%s'`,
+          contexts: ["selection"]
+        });
+      });
+    });
+
     const status = document.getElementById('status');
     status.textContent = 'Settings saved!';
     status.className = 'success';
