@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const { selectorData } = await chrome.storage.session.get('selectorData');
     const { searchOptions } = await chrome.storage.sync.get({ searchOptions: [] });
+    const { closeKey } = await chrome.storage.sync.get({ closeKey: 'Escape' });
     
     const optionsContainer = document.getElementById('options');
     
@@ -22,8 +23,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         optionsContainer.appendChild(div);
     });
 
-    // Update the keyboard event handler
+    // Add close key handler
     document.addEventListener('keydown', (e) => {
+        if (e.key === closeKey) {
+            window.close();
+            return;
+        }
+
         // Convert to uppercase for consistent comparison
         const pressedKey = e.key.toUpperCase();
         
@@ -41,4 +47,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             window.close();
         }
     });
+
+    // After adding all options, adjust window height
+    setTimeout(() => {
+        const totalHeight = document.body.scrollHeight;
+        chrome.windows.getCurrent((window) => {
+            chrome.windows.update(window.id, {
+                height: totalHeight + 40 // Add some padding
+            });
+        });
+    }, 50); // Small delay to ensure DOM is fully rendered
 }); 
