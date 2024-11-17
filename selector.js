@@ -1,60 +1,59 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    const { selectorData } = await chrome.storage.session.get('selectorData');
-    const { searchOptions } = await chrome.storage.sync.get({ searchOptions: [] });
-    const { closeKey } = await chrome.storage.sync.get({ closeKey: 'Escape' });
-    
+document.addEventListener('DOMContentLoaded', () => {
     const optionsContainer = document.getElementById('options');
-    
-    searchOptions.forEach(option => {
-        const div = document.createElement('div');
-        div.className = 'search-option';
-        div.innerHTML = `
-            ${option.name}
-            <span class="shortcut">${option.quickKey || ''}</span>
-        `;
-        div.addEventListener('click', () => {
-            chrome.runtime.sendMessage({
-                action: 'performSearch',
-                searchText: selectorData.selectedText,
-                searchType: option.id
+
+    // Fetch search options from storage
+    chrome.storage.sync.get({ searchOptions: [] }, (settings) => {
+        settings.searchOptions.forEach(option => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'search-option';
+            optionDiv.dataset.id = option.id;
+            optionDiv.textContent = option.name;
+
+            // Add shortcut label if available
+            if (option.quickKey) {
+                const shortcutSpan = document.createElement('span');
+                shortcutSpan.className = 'shortcut';
+                shortcutSpan.textContent = `(${option.quickKey})`;
+                optionDiv.appendChild(shortcutSpan);
+            }
+
+            // Add click event to perform search
+            optionDiv.addEventListener('click', () => {
+                performSearch(option.id);
             });
-            window.close();
+
+            optionsContainer.appendChild(optionDiv);
         });
-        optionsContainer.appendChild(div);
     });
 
-    // Add close key handler
+    // Listen for key presses
     document.addEventListener('keydown', (e) => {
-        if (e.key === closeKey) {
-            window.close();
-            return;
-        }
+        const key = e.key.toUpperCase();
+        chrome.storage.sync.get({ searchOptions: [] }, (settings) => {
+            const matchedOption = settings.searchOptions.find(opt => opt.quickKey === key);
+            if (matchedOption) {
+                performSearch(matchedOption.id);
+            }
+        });
+    });
+});
 
-        // Convert to uppercase for consistent comparison
-        const pressedKey = e.key.toUpperCase();
-        
-        const option = searchOptions.find(opt => 
-            opt.quickKey && opt.quickKey.toUpperCase() === pressedKey
-        );
-        
-        if (option) {
-            e.preventDefault(); // Prevent any default behavior
+// Function to perform search
+function performSearch(searchType) {
+    chrome.storage.session.get(['selectorData'], (data) => {
+        const { selectedText, parentTabId } = data.selectorData || {};
+        if (selectedText && searchType) {
+            // Send message to background.js to perform search
             chrome.runtime.sendMessage({
                 action: 'performSearch',
-                searchText: selectorData.selectedText,
-                searchType: option.id
+                searchText: selectedText,
+                searchType: searchType
+            }, () => {
+                // Close the selector popup after initiating search
+                window.close();
             });
-            window.close();
+        } else {
+            console.error('Missing selectedText or searchType');
         }
     });
-
-    // After adding all options, adjust window height
-    setTimeout(() => {
-        const totalHeight = document.body.scrollHeight;
-        chrome.windows.getCurrent((window) => {
-            chrome.windows.update(window.id, {
-                height: totalHeight + 40 // Add some padding
-            });
-        });
-    }, 50); // Small delay to ensure DOM is fully rendered
-}); 
+} 
