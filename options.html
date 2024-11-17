@@ -1,101 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Search Settings</title>
-  <style>
-    body {
-      padding: 20px;
-      width: 300px;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-    .setting-group {
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 500;
-    }
-    input[type="number"] {
-      width: 60px;
-    }
-    .hint {
-      color: #666;
-      font-size: 0.9em;
-      margin-top: 4px;
-    }
-    .search-options {
-      margin: 20px 0;
-    }
-    .search-option {
-      border: 1px solid #ddd;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 4px;
-    }
-    .search-option input {
-      margin: 5px 0;
-      width: 100%;
-    }
-    .shortcut-input {
-      width: 50px !important;
-      text-transform: uppercase;
-    }
-    .delete-btn {
-      background: #ff4444;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 3px;
-      float: right;
-    }
-    .add-search-btn {
-      background: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 3px;
-      margin: 10px 0;
-      cursor: pointer;
-    }
-    .hint {
-      font-style: italic;
-      color: #666;
-      font-size: 0.8em;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kagi Split Search Settings</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --danger-color: #ff4444;
+            --border-color: #e0e0e0;
+            --background-gray: #f5f5f5;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: var(--background-gray);
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .setting-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        select {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        input[type="number"] {
+            width: 80px;
+        }
+
+        .hint {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .search-option {
+            background: var(--background-gray);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .delete-btn {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        .delete-btn:hover {
+            opacity: 0.9;
+        }
+
+        .add-search-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        .add-search-btn:hover {
+            opacity: 0.9;
+        }
+
+        #save {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        #save:hover {
+            opacity: 0.9;
+        }
+
+        #status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            display: none;
+        }
+
+        #status.success {
+            display: block;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        #status.error {
+            display: block;
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .shortcut-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .shortcut-input {
+            width: 80px !important;
+        }
+    </style>
 </head>
 <body>
-  <h2>Settings</h2>
-  
-  <div class="setting-group">
-    <label for="maxWindows">Maximum Open Windows:</label>
-    <input type="number" id="maxWindows" min="1" max="10">
-    <div class="hint">Oldest window will close when limit is reached</div>
-  </div>
+    <div class="header">
+        <h1>Kagi Split Search Settings</h1>
+    </div>
 
-  <div class="setting-group">
-    <label for="closeKey">Close Window Key:</label>
-    <select id="closeKey">
-      <option value="Escape">Escape</option>
-      <option value="q">Q</option>
-      <option value="w">W</option>
-    </select>
-    <div class="hint">Press this key to close the search window</div>
-  </div>
+    <div class="container">
+        <div class="card">
+            <h2>General Settings</h2>
+            <div class="setting-group">
+                <label for="maxWindows">Maximum Open Windows</label>
+                <input type="number" id="maxWindows" min="1" max="10">
+                <div class="hint">Oldest window will close when limit is reached</div>
+            </div>
 
-  <h3>Search Options</h3>
-  <div class="hint">Use {query} in the URL where you want the selected text to appear</div>
-  <div id="searchOptions" class="search-options">
-    <!-- Search options will be inserted here -->
-  </div>
+            <div class="setting-group">
+                <label for="closeKey">Close Window Key</label>
+                <select id="closeKey">
+                    <option value="Escape">Escape</option>
+                    <option value="q">Q</option>
+                    <option value="w">W</option>
+                </select>
+                <div class="hint">Press this key to close the search window</div>
+            </div>
+        </div>
 
-  <button id="addSearch" class="add-search-btn">Add New Search Option</button>
-  <button id="save">Save Settings</button>
-  <div id="status"></div>
+        <div class="card">
+            <h2>Search Options</h2>
+            <div class="hint">Use {query} in the URL where you want the selected text to appear</div>
+            <div id="searchOptions" class="search-options">
+                <!-- Search options will be inserted here -->
+            </div>
 
-  <script src="options.js"></script>
+            <button id="addSearch" class="add-search-btn">Add New Search Option</button>
+        </div>
+
+        <button id="save">Save Settings</button>
+        <div id="status"></div>
+    </div>
+
+    <script src="options.js"></script>
 </body>
 </html> 

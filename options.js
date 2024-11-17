@@ -120,17 +120,19 @@ document.getElementById('save').addEventListener('click', () => {
   });
 
   if (errors.length > 0) {
-    document.getElementById('status').textContent = errors[0];
-    document.getElementById('status').style.color = 'red';
+    const status = document.getElementById('status');
+    status.textContent = errors[0];
+    status.className = 'error';
     return;
   }
 
   chrome.storage.sync.set(settings, () => {
     const status = document.getElementById('status');
     status.textContent = 'Settings saved!';
-    status.style.color = 'green';
+    status.className = 'success';
     setTimeout(() => {
-      status.textContent = '';
+        status.className = '';
+        status.textContent = '';
     }, 2000);
   });
 }); 
