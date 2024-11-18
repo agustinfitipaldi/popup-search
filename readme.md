@@ -1,14 +1,33 @@
 # Popup Search
 
 A browser extension, made with Claude Sonnet 3.5 in Cursor, that enables quick popup
-searching using Kagi and other search engines. Select text on any webpage and search
-it in a convenient popup window.
+searching using keyboard shortcuts and configurable search engines. 
+
+## Usage
+
+### Demo
+Below you can see me using the main access keys (1,2,3) to bring up popup searches on various highlighted pieces of text from an article.
+I then use the selector to bring up even more options like HN Algolia and Youtube.
+
+https://github.com/user-attachments/assets/771ceff2-2cb2-4b1b-817b-12d767844d4b
+
+Among the configuration options, you can set a maximum number of windows constraint. Here you can see me setting it to 2, and then showing
+how it automatically closes older windows you may have left open in order to prevent clutter.
+
+https://github.com/user-attachments/assets/be51e538-5227-44c3-8cde-7f1050bacce5
+
+### Basic Steps
+
+1. Select any text on a webpage
+2. Press `Alt + S` to bring up the selector
+3. Press the corresponding assigned shortcut to bring up the search popup
+4. You can also right-click and select the search option from the Popup Search context menu
 
 ## Features
 
 - 🔍 Quick popup search from any webpage
-- ⌨️ Customizable keyboard shortcuts (Alt + K/O/W/U)
-- 🎯 Context menu integration for easy access and more search options
+- ⌨️ Customizable keyboard shortcuts for frequent use (`Alt + 1/2/3`)
+- 🎯 Popup selector for even more options (`Alt + S`)
 - ⚙️ Configurable search engines and settings
 
 ## Installation
@@ -18,27 +37,13 @@ it in a convenient popup window.
 3. Enable "Developer mode" in the top right (not needed in Edge)
 4. Click "Load unpacked" and select the extension directory
 
-## Usage
-
-### Context Menu Search
-
-1. Select any text on a webpage
-2. Right-click and select the search option from the Popup Search context menu
-
-### Keyboard Shortcuts
+### Default Keyboard Shortcuts
 
 - `Esc`: Exit out of any popup (unless you've started navigating already)
-- `Alt + K`: Search with Kagi
-- `Alt + O`: Search with Oxford English Dictionary
-- `Alt + W`: Search with Webster's 1913
-- `Alt + U`: Search with UCSB Library
-
-### Default Search Engines
-
-- Kagi Search
-- Oxford English Dictionary
-- Webster's 1913 Dictionary
-- UCSB Library Search
+- `Alt + 1`: Search with Kagi
+- `Alt + 2`: Search with Oxford English Dictionary
+- `Alt + 3`: Search with Webster's 1913
+- `Alt + S`: Popup Search Selector
 
 ## Configuration
 
