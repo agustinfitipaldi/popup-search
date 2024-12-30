@@ -16,17 +16,30 @@ how it automatically closes older windows you may have left open in order to pre
 
 https://github.com/user-attachments/assets/be51e538-5227-44c3-8cde-7f1050bacce5
 
+Also in configuration options is the ability to add more search engines. For example, I found myself wanting a "phrase explainer", something 
+I could use while reading an article where the author takes a few too many literary excursions. A simple modification of the base Kagi query,
+with some "pre-prompt" and a question mark suffix (to trigger Kagi's AI summarizer) did the trick wonderfully.
+
+`https://kagi.com/search?q=Explain this phrase, "{query}"?`
+
+Leads to your highlighted text getting spliced inbetween those quotation marks. Furthermore, I think but do not know, that since you are using
+quotations, Kagi does a literal search and so the AI gets a very short list of search results, likely just the article you were reading, giving
+it extra focus on the surrounding context of the article.
+
+This example shows how this could be used for rather flexible objectives. Essentially anything you can get to by splicing in a query, or pre-set
+by modifying the url is fair game!
+
 ### Basic Steps
 
 1. Select any text on a webpage
-2. Press `Alt + S` to bring up the selector
-3. Press the corresponding assigned shortcut to bring up the search popup
+2. You can either press one of the `Alt + 1/2/3` for your "speed-dials" or `Alt + S` to bring up the selector
+3. (if in the selector) Press the corresponding assigned shortcut to bring up the search popup
 4. You can also right-click and select the search option from the Popup Search context menu
 
 ## Features
 
 - 🔍 Quick popup search from any webpage
-- ⌨️ Customizable keyboard shortcuts for frequent use (`Alt + 1/2/3`)
+- ⌨️ Customizable "speed-dials" for frequent use (`Alt + 1/2/3`)
 - 🎯 Popup selector for even more options (`Alt + S`)
 - ⚙️ Configurable search engines and settings
 
@@ -44,6 +57,9 @@ https://github.com/user-attachments/assets/be51e538-5227-44c3-8cde-7f1050bacce5
 - `Alt + 2`: Search with Oxford English Dictionary
 - `Alt + 3`: Search with Webster's 1913
 - `Alt + S`: Popup Search Selector
+
+Note:
+If you don't like 1,2,3, or S, you can change them rather quickly but you need to modify both the code and the manifest.
 
 ## Configuration
 
